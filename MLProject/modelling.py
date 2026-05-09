@@ -17,7 +17,8 @@ from sklearn.metrics import (
 # =========================
 # CONFIG
 # =========================
-DATA_PATH = "data_preprocessing.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "data_preprocessing.csv")
 TARGET = "Churn"
 EXPERIMENT_NAME = "telco_churn_rf_baseline"
 
