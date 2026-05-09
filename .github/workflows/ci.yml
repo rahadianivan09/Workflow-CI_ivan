@@ -31,7 +31,7 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r MLProject/requirements.txt
         pip install mlflow
 
     # =========================
@@ -39,7 +39,7 @@ jobs:
     # =========================
     - name: Run MLflow Project
       run: |
-        mlflow run .
+        mlflow run MLProject
 
     # =========================
     # UPLOAD ARTIFACT
@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: trained-model
-        path: artifacts/
+        path: MLProject/artifacts/
 
     # =========================
     # LOGIN TO DOCKER HUB
@@ -60,13 +60,13 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # =========================
-    # BUILD DOCKER IMAGE
+    # BUILD DOCKER IMAGE (MLflow)
     # =========================
     - name: Build Docker Image
       run: |
         mlflow models build-docker \
-        -m artifacts/model \
-        -n telco-churn-model
+          -m MLProject/artifacts/model \
+          -n telco-churn-model
 
     # =========================
     # TAG IMAGE
