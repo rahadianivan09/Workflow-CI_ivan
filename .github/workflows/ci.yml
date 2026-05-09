@@ -33,22 +33,20 @@ jobs:
         python MLProject/modelling.py
 
     # =========================
-    # CHECK ARTIFACT EXISTS
+    # CHECK ARTIFACT (DEBUG OPTIONAL)
+    # =========================
+    - name: Verify Artifact
+      run: |
+        ls -R MLProject/artifacts/
+
+    # =========================
+    # UPLOAD ARTIFACT (FIXED)
     # =========================
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: trained-model
-        path: MLProject/artifacts/
-    
-    # =========================
-    # UPLOAD ARTIFACT
-    # =========================
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: trained-model
-        path: MLProject/artifacts/model
+        name: trained-model-${{ github.run_id }}
+        path: MLProject/artifacts/model/
 
     # =========================
     # LOGIN DOCKER HUB
