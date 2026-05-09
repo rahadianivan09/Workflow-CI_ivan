@@ -1,0 +1,85 @@
+name: MLflow CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  train-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # =========================
+    # CHECKOUT REPOSITORY
+    # =========================
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # =========================
+    # SETUP PYTHON
+    # =========================
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # =========================
+    # INSTALL DEPENDENCIES
+    # =========================
+    - name: Install Dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install mlflow
+
+    # =========================
+    # RUN MLFLOW PROJECT
+    # =========================
+    - name: Run MLflow Project
+      run: |
+        mlflow run .
+
+    # =========================
+    # UPLOAD ARTIFACT
+    # =========================
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-model
+        path: artifacts/
+
+    # =========================
+    # LOGIN TO DOCKER HUB
+    # =========================
+    - name: Login Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # =========================
+    # BUILD DOCKER IMAGE
+    # =========================
+    - name: Build Docker Image
+      run: |
+        mlflow models build-docker \
+        -m artifacts/model \
+        -n telco-churn-model
+
+    # =========================
+    # TAG IMAGE
+    # =========================
+    - name: Tag Docker Image
+      run: |
+        docker tag telco-churn-model \
+        ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+
+    # =========================
+    # PUSH IMAGE
+    # =========================
+    - name: Push Docker Image
+      run: |
+        docker push \
+        ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
