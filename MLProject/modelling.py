@@ -76,7 +76,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 with mlflow.start_run():
 
     # Enable autolog
-    mlflow.sklearn.autolog()
+    mlflow.sklearn.autolog(log_models=False)
 
     # =========================
     # MODEL
