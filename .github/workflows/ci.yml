@@ -28,25 +28,18 @@ jobs:
     # =========================
     # TRAINING
     # =========================
-    - name: Run Training Script Directly
+    - name: Run Training Script
       run: |
         python MLProject/modelling.py
 
     # =========================
-    # CHECK ARTIFACT (DEBUG OPTIONAL)
-    # =========================
-    - name: Verify Artifact
-      run: |
-        ls -R MLProject/artifacts/
-
-    # =========================
-    # UPLOAD ARTIFACT (FIXED)
+    # UPLOAD ARTIFACT
     # =========================
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: trained-model-${{ github.run_id }}
-        path: MLProject/artifacts/model/
+        path: MLProject/artifacts/
 
     # =========================
     # LOGIN DOCKER HUB
@@ -62,22 +55,18 @@ jobs:
     # =========================
     - name: Build Docker Image
       run: |
-        mlflow models build-docker \
-          -m MLProject/artifacts/model \
-          -n telco-churn-model
+        docker build -t telco-churn-model .
 
     # =========================
     # TAG IMAGE
     # =========================
     - name: Tag Docker Image
       run: |
-        docker tag telco-churn-model \
-        ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+        docker tag telco-churn-model ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
 
     # =========================
     # PUSH IMAGE
     # =========================
     - name: Push Docker Image
       run: |
-        docker push \
-        ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
