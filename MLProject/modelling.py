@@ -89,9 +89,12 @@ with mlflow.start_run():
     # =========================
     # SAVE MODEL
     # =========================
+    MODEL_PATH = os.path.join(BASE_DIR, "artifacts", "model")
+    os.makedirs(MODEL_PATH, exist_ok=True)
+
     mlflow.sklearn.save_model(
-        sk_model=model,
-        path="artifacts/model"
+    sk_model=model,
+    path=MODEL_PATH
     )
 
     # =========================

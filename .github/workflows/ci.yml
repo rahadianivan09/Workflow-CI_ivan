@@ -33,12 +33,14 @@ jobs:
         python MLProject/modelling.py
 
     # =========================
-    # CHECK ARTIFACT EXISTS (DEBUG SAFE STEP)
+    # CHECK ARTIFACT EXISTS
     # =========================
-    - name: Verify Model Artifact
-      run: |
-        ls -R MLProject/artifacts/
-
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-model
+        path: MLProject/artifacts/
+    
     # =========================
     # UPLOAD ARTIFACT
     # =========================
