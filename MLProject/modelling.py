@@ -23,7 +23,7 @@ TARGET = "Churn"
 EXPERIMENT_NAME = "telco_churn_rf_baseline"
 
 # =========================
-# MLFLOW SETUP (FIXED FOR CI)
+# MLFLOW SETUP
 # =========================
 mlflow.set_tracking_uri("file:/tmp/mlruns")
 mlflow.set_experiment(EXPERIMENT_NAME)
@@ -49,7 +49,7 @@ X = df.drop(TARGET, axis=1)
 y = df[TARGET]
 
 # =========================
-# FIX INTEGER TYPE
+# INTEGER TYPE
 # =========================
 int_cols = X.select_dtypes(include=["int64"]).columns
 X[int_cols] = X[int_cols].astype("float64")
@@ -66,9 +66,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # =========================
-# TRAINING (MLFLOW RUN SAFE)
+# TRAINING
 # =========================
-with mlflow.start_run():
+with mlflow.start_run(nested=True):
 
     # autolog (CI-safe)
     mlflow.sklearn.autolog(log_models=False)
