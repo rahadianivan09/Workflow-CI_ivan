@@ -1,3 +1,4 @@
+```yaml
 name: MLflow CI Pipeline
 
 on:
@@ -11,62 +12,79 @@ jobs:
 
     steps:
 
+    # =========================
+    # CHECKOUT
+    # =========================
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    # =========================
+    # SETUP PYTHON
+    # =========================
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
+    # =========================
+    # INSTALL DEPENDENCIES
+    # =========================
     - name: Install Dependencies
       run: |
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
+        pip install mlflow==2.19.0
         pip install -r MLProject/requirements.txt
-        pip install mlflow
 
     # =========================
-    # TRAINING
+    # RUN MLFLOW PROJECT
     # =========================
-    - name: Run Training Script
+    - name: Run MLflow Project
       run: |
-        python MLProject/modelling.py
+        mlflow run MLProject --env-manager=local
 
     # =========================
-    # UPLOAD ARTIFACT
+    # UPLOAD MODEL ARTIFACT
     # =========================
-    - name: Upload Artifact
+    - name: Upload Model Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: trained-model-${{ github.run_id }}
-        path: MLProject/artifacts/
+        name: telco-churn-model-artifact
+        path: MLProject/artifacts/model
 
     # =========================
     # LOGIN DOCKER HUB
     # =========================
-    - name: Login Docker Hub
+    - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # =========================
-    # BUILD DOCKER IMAGE
+    # BUILD DOCKER IMAGE FROM MLFLOW MODEL
     # =========================
     - name: Build Docker Image
+      shell: bash
       run: |
-        docker build -t telco-churn-model .
+        mlflow models build-docker \
+          --model-uri MLProject/artifacts/model \
+          --name telco-churn-model
 
     # =========================
     # TAG IMAGE
     # =========================
     - name: Tag Docker Image
+      shell: bash
       run: |
-        docker tag telco-churn-model ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+        docker tag telco-churn-model \
+          ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
 
     # =========================
     # PUSH IMAGE
     # =========================
     - name: Push Docker Image
+      shell: bash
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+        docker push \
+          ${{ secrets.DOCKER_USERNAME }}/telco-churn-model:latest
+```

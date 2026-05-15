@@ -97,6 +97,8 @@ with mlflow.start_run():
     path=MODEL_PATH
     )
 
+    print(f"\nModel saved to: {MODEL_PATH}")
+
     # =========================
     # PREDICTION
     # =========================
