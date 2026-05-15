@@ -25,7 +25,7 @@ EXPERIMENT_NAME = "telco_churn_rf_baseline"
 # =========================
 # MLFLOW SETUP
 # =========================
-mlflow.set_tracking_uri("file:/tmp/mlruns")
+
 mlflow.set_experiment(EXPERIMENT_NAME)
 
 # =========================
