@@ -22,11 +22,6 @@ DATA_PATH = os.path.join(BASE_DIR, "data_preprocessing.csv")
 TARGET = "Churn"
 EXPERIMENT_NAME = "telco_churn_rf_baseline"
 
-# =========================
-# MLFLOW SETUP
-# =========================
-
-mlflow.set_experiment(EXPERIMENT_NAME)
 
 # =========================
 # LOAD DATA
@@ -68,7 +63,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # =========================
 # TRAINING
 # =========================
-with mlflow.start_run(nested=True):
+with mlflow.start_run():
 
     # autolog (CI-safe)
     mlflow.sklearn.autolog(log_models=False)
