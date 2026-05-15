@@ -67,7 +67,8 @@ jobs:
         run: |
           mlflow models build-docker \
             --model-uri MLProject/artifacts/model \
-            --name telco-churn-model
+            --name telco-churn-model \
+            --env-manager local
 
       # =========================
       # TAG IMAGE
